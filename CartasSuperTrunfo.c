@@ -1,118 +1,248 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h> // Para system("cls") ou system("clear")
 
-// Desafio Super Trunfo - Países
-// Tema 1 - Cadastro das Cartas
-// Este código inicial serve como base para o desenvolvimento do sistema de cadastro de cartas de cidades.
-// Siga os comentários para implementar cada parte do desafio.
-//Teste larissa
+/*
+ ============================================================================
+ Desafio: Super Trunfo - A Batalha Final (Nível Avançado)
+ Linguagem: C
+ Objetivo: Permitir que o jogador escolha dois atributos para comparar,
+           utilizando menus dinâmicos (switch), tratando exceções e
+           determinando o vencedor da rodada com base em um sistema de pontos.
+ ============================================================================
+*/
 
-  #include <stdio.h>
+// Documentação: Estrutura para armazenar os dados de uma carta de país.
+// Usamos 'long long int' para população para garantir que números grandes caibam.
+// Usamos 'double' para maior precisão em valores decimais.
+struct CartaSuperTrunfo {
+    char pais[50];
+    char codigo[5];
+    long long int populacao;
+    double area; // em km²
+    double pib;  // em trilhões de USD
+    double idh;  // Índice de Desenvolvimento Humano
+    double densidadeDemografica; // Atributo calculado
+};
+
+// Protótipo da função para limpar a tela (melhora a usabilidade)
+void limparTela();
 
 int main() {
-    // --- Variáveis para a Carta 1 ---
-    char estado1;
-    char codigoCarta1[5];
-    char nomeCidade1[50];
-    // REQUISITO: População agora é unsigned long int para acomodar números maiores
-    unsigned long int populacao1;
-    float area1;
-    float pib1; // PIB em bilhões de reais
-    int pontosTuristicos1;
-    float densidadePopulacional1;
-    float pibPerCapita1;
-    float superPoder1; // Novo atributo
+    // Declaração e inicialização das duas cartas para a batalha
+    struct CartaSuperTrunfo carta1, carta2;
 
-    // --- Variáveis para a Carta 2 ---
-    char estado2;
-    char codigoCarta2[5];
-    char nomeCidade2[50];
-    unsigned long int populacao2;
-    float area2;
-    float pib2;
-    int pontosTuristicos2;
-    float densidadePopulacional2;
-    float pibPerCapita2;
-    float superPoder2;
+    // --- CADASTRO DA CARTA 1: BRASIL ---
+    strcpy(carta1.pais, "Brasil");
+    strcpy(carta1.codigo, "C1");
+    carta1.populacao = 215300000;
+    carta1.area = 8516000;
+    carta1.pib = 1.609;
+    carta1.idh = 0.759;
 
-    // --- Variáveis para armazenar o resultado das comparações ---
-    // 1 significa que a Carta 1 venceu, 0 que a Carta 2 venceu.
-    int vitoriaPopulacao;
-    int vitoriaArea;
-    int vitoriaPIB;
-    int vitoriaPontosTuristicos;
-    int vitoriaDensidade;
-    int vitoriaPIBPerCapita;
-    int vitoriaSuperPoder;
+    // --- CADASTRO DA CARTA 2: JAPÃO ---
+    strcpy(carta2.pais, "Japao");
+    strcpy(carta2.codigo, "D2");
+    carta2.populacao = 125700000;
+    carta2.area = 377975;
+    carta2.pib = 4.941;
+    carta2.idh = 0.919;
 
-    // --- Leitura dos Dados da Carta 1 ---
-    printf("--- Cadastro da Carta 1 ---\n");
-    printf("Digite o Estado (A-H): ");
-    scanf(" %c", &estado1);
-    printf("Digite o Codigo da Carta (ex: A01): ");
-    scanf("%s", codigoCarta1);
-    printf("Digite o Nome da Cidade: ");
-    scanf(" %[^\n]", nomeCidade1);
-    printf("Digite a Populacao: ");
-    // REQUISITO: Usar %lu para ler unsigned long int
-    scanf("%lu", &populacao1);
-    printf("Digite a Area (em km2): ");
-    scanf("%f", &area1);
-    printf("Digite o PIB (em bilhoes de R$): ");
-    scanf("%f", &pib1);
-    printf("Digite o Numero de Pontos Turisticos: ");
-    scanf("%d", &pontosTuristicos1);
+    // --- CÁLCULO DE ATRIBUTOS DERIVADOS ---
+    carta1.densidadeDemografica = carta1.populacao / carta1.area;
+    carta2.densidadeDemografica = carta2.populacao / carta2.area;
 
-    // --- Leitura dos Dados da Carta 2 ---
-    printf("\n--- Cadastro da Carta 2 ---\n");
-    printf("Digite o Estado (A-H): ");
-    scanf(" %c", &estado2);
-    printf("Digite o Codigo da Carta (ex: B02): ");
-    scanf("%s", codigoCarta2);
-    printf("Digite o Nome da Cidade: ");
-    scanf(" %[^\n]", nomeCidade2);
-    printf("Digite a Populacao: ");
-    scanf("%lu", &populacao2);
-    printf("Digite a Area (em km2): ");
-    scanf("%f", &area2);
-    printf("Digite o PIB (em bilhoes de R$): ");
-    scanf("%f", &pib2);
-    printf("Digite o Numero de Pontos Turisticos: ");
-    scanf("%d", &pontosTuristicos2);
+    // Usabilidade: Exibe os dados das cartas antes do início da rodada
+    printf("====================================================\n");
+    printf("        SUPER TRUNFO - DESAFIO FINAL\n");
+    printf("====================================================\n\n");
+    printf("Carta 1: %s\n", carta1.pais);
+    printf("  Populacao: %lld\n", carta1.populacao);
+    printf("  Area: %.0f km2\n", carta1.area);
+    printf("  PIB: %.3f trilhoes USD\n", carta1.pib);
+    printf("  IDH: %.3f\n", carta1.idh);
+    printf("  Densidade Demografica: %.2f hab/km2\n\n", carta1.densidadeDemografica);
 
-    // --- Cálculos para a Carta 1 ---
-    densidadePopulacional1 = (float)populacao1 / area1;
-    pibPerCapita1 = (pib1 * 1000000000) / (float)populacao1;
-    // REQUISITO: Cálculo do Super Poder. Convertemos os inteiros para float para a soma.
-    superPoder1 = (float)populacao1 + area1 + (pib1 * 1000000000) + (float)pontosTuristicos1 + pibPerCapita1 + (1.0 / densidadePopulacional1);
+    printf("Carta 2: %s\n", carta2.pais);
+    printf("  Populacao: %lld\n", carta2.populacao);
+    printf("  Area: %.0f km2\n", carta2.area);
+    printf("  PIB: %.3f trilhoes USD\n", carta2.pib);
+    printf("  IDH: %.3f\n", carta2.idh);
+    printf("  Densidade Demografica: %.2f hab/km2\n\n", carta2.densidadeDemografica);
 
-    // --- Cálculos para a Carta 2 ---
-    densidadePopulacional2 = (float)populacao2 / area2;
-    pibPerCapita2 = (pib2 * 1000000000) / (float)populacao2;
-    superPoder2 = (float)populacao2 + area2 + (pib2 * 1000000000) + (float)pontosTuristicos2 + pibPerCapita2 + (1.0 / densidadePopulacional2);
+    printf("Pressione Enter para iniciar a batalha...");
+    getchar(); // Pausa o programa esperando a tecla Enter
+    limparTela();
 
-    // --- Comparação das Cartas (Batalha) ---
-    // Para a maioria, o maior valor vence (Carta 1 > Carta 2 resulta em 1)
-    vitoriaPopulacao = populacao1 > populacao2;
-    vitoriaArea = area1 > area2;
-    vitoriaPIB = pib1 > pib2;
-    vitoriaPontosTuristicos = pontosTuristicos1 > pontosTuristicos2;
-    vitoriaPIBPerCapita = pibPerCapita1 > pibPerCapita2;
-    vitoriaSuperPoder = superPoder1 > superPoder2;
-    // REQUISITO: Para densidade, o MENOR valor vence (Carta 1 < Carta 2 resulta em 1)
-    vitoriaDensidade = densidadePopulacional1 < densidadePopulacional2;
+    // Variáveis para armazenar as escolhas do jogador e os valores comparados
+    int escolha1 = 0, escolha2 = 0;
+    char nomeAtributo1[30], nomeAtributo2[30];
+    double valorCarta1_attr1, valorCarta2_attr1;
+    double valorCarta1_attr2, valorCarta2_attr2;
 
-    // --- Exibição dos Resultados da Batalha ---
-    printf("\n\n---------------------------------------\n");
-    printf("      RESULTADO DA BATALHA\n");
-    printf("---------------------------------------\n");
-    // Usamos um operador ternário para decidir qual número de carta (1 ou 2) imprimir
-    printf("Populacao: Carta %d venceu (%d)\n", (vitoriaPopulacao ? 1 : 2), vitoriaPopulacao);
-    printf("Area: Carta %d venceu (%d)\n", (vitoriaArea ? 1 : 2), vitoriaArea);
-    printf("PIB: Carta %d venceu (%d)\n", (vitoriaPIB ? 1 : 2), vitoriaPIB);
-    printf("Pontos Turisticos: Carta %d venceu (%d)\n", (vitoriaPontosTuristicos ? 1 : 2), vitoriaPontosTuristicos);
-    printf("Densidade Populacional: Carta %d venceu (%d)\n", (vitoriaDensidade ? 1 : 2), vitoriaDensidade);
-    printf("PIB per Capita: Carta %d venceu (%d)\n", (vitoriaPIBPerCapita ? 1 : 2), vitoriaPIBPerCapita);
-    printf("Super Poder: Carta %d venceu (%d)\n", (vitoriaSuperPoder ? 1 : 2), vitoriaSuperPoder);
+    // --- MENU 1: ESCOLHA DO PRIMEIRO ATRIBUTO ---
+    do {
+        printf("====================================================\n");
+        printf("          RODADA 1: Escolha o PRIMEIRO atributo\n");
+        printf("====================================================\n");
+        printf("1 - Populacao\n");
+        printf("2 - Area (km2)\n");
+        printf("3 - PIB (Trilhoes USD)\n");
+        printf("4 - IDH\n");
+        printf("5 - Densidade Demografica (menor vence)\n");
+        printf("Sua escolha: ");
+        scanf("%d", &escolha1);
+
+        // Manutenibilidade: O 'switch' organiza a lógica de seleção de forma limpa.
+        switch (escolha1) {
+            case 1:
+                strcpy(nomeAtributo1, "Populacao");
+                valorCarta1_attr1 = (double)carta1.populacao; // Cast para double
+                valorCarta2_attr1 = (double)carta2.populacao;
+                break;
+            case 2:
+                strcpy(nomeAtributo1, "Area");
+                valorCarta1_attr1 = carta1.area;
+                valorCarta2_attr1 = carta2.area;
+                break;
+            case 3:
+                strcpy(nomeAtributo1, "PIB");
+                valorCarta1_attr1 = carta1.pib;
+                valorCarta2_attr1 = carta2.pib;
+                break;
+            case 4:
+                strcpy(nomeAtributo1, "IDH");
+                valorCarta1_attr1 = carta1.idh;
+                valorCarta2_attr1 = carta2.idh;
+                break;
+            case 5:
+                strcpy(nomeAtributo1, "Densidade Demografica");
+                valorCarta1_attr1 = carta1.densidadeDemografica;
+                valorCarta2_attr1 = carta2.densidadeDemografica;
+                break;
+            // Confiabilidade: 'default' trata entradas inválidas.
+            default:
+                limparTela();
+                printf("Opcao invalida! Por favor, escolha um numero entre 1 e 5.\n\n");
+                escolha1 = 0; // Reseta a escolha para manter o loop
+        }
+    } while (escolha1 == 0);
+
+    limparTela();
+
+    // --- MENU 2: ESCOLHA DO SEGUNDO ATRIBUTO (DINÂMICO) ---
+    do {
+        printf("====================================================\n");
+        printf("          RODADA 2: Escolha o SEGUNDO atributo\n");
+        printf("====================================================\n");
+        printf("Primeiro atributo escolhido: %s\n\n", nomeAtributo1);
+
+        // Menus Dinâmicos: O 'if' impede que a opção já escolhida apareça.
+        if (escolha1 != 1) printf("1 - Populacao\n");
+        if (escolha1 != 2) printf("2 - Area (km2)\n");
+        if (escolha1 != 3) printf("3 - PIB (Trilhoes USD)\n");
+        if (escolha1 != 4) printf("4 - IDH\n");
+        if (escolha1 != 5) printf("5 - Densidade Demografica (menor vence)\n");
+        printf("Sua escolha: ");
+        scanf("%d", &escolha2);
+
+        // Confiabilidade: Garante que o jogador não escolha o mesmo atributo duas vezes.
+        if (escolha2 == escolha1) {
+            limparTela();
+            printf("Erro! Voce nao pode escolher o mesmo atributo duas vezes.\n\n");
+            escolha2 = 0; // Força a repetição do loop
+        } else {
+            switch (escolha2) {
+                case 1:
+                    strcpy(nomeAtributo2, "Populacao");
+                    valorCarta1_attr2 = (double)carta1.populacao;
+                    valorCarta2_attr2 = (double)carta2.populacao;
+                    break;
+                case 2:
+                    strcpy(nomeAtributo2, "Area");
+                    valorCarta1_attr2 = carta1.area;
+                    valorCarta2_attr2 = carta2.area;
+                    break;
+                case 3:
+                    strcpy(nomeAtributo2, "PIB");
+                    valorCarta1_attr2 = carta1.pib;
+                    valorCarta2_attr2 = carta2.pib;
+                    break;
+                case 4:
+                    strcpy(nomeAtributo2, "IDH");
+                    valorCarta1_attr2 = carta1.idh;
+                    valorCarta2_attr2 = carta2.idh;
+                    break;
+                case 5:
+                    strcpy(nomeAtributo2, "Densidade Demografica");
+                    valorCarta1_attr2 = carta1.densidadeDemografica;
+                    valorCarta2_attr2 = carta2.densidadeDemografica;
+                    break;
+                default:
+                    limparTela();
+                    printf("Opcao invalida! Por favor, escolha um dos atributos disponiveis.\n\n");
+                    escolha2 = 0; // Reseta a escolha
+            }
+        }
+    } while (escolha2 == 0);
+
+    limparTela();
+
+    // --- LÓGICA DE COMPARAÇÃO E RESULTADO ---
+    int pontosCarta1 = 0;
+    int pontosCarta2 = 0;
+
+    // Comparação do Atributo 1
+    if (escolha1 == 5) { // Regra especial para Densidade (menor vence)
+        pontosCarta1 += (valorCarta1_attr1 < valorCarta2_attr1) ? 1 : 0;
+        pontosCarta2 += (valorCarta2_attr1 < valorCarta1_attr1) ? 1 : 0;
+    } else { // Regra geral (maior vence)
+        // Operador Ternário: Forma concisa de um if-else para atribuir o ponto.
+        pontosCarta1 += (valorCarta1_attr1 > valorCarta2_attr1) ? 1 : 0;
+        pontosCarta2 += (valorCarta2_attr1 > valorCarta1_attr1) ? 1 : 0;
+    }
+
+    // Comparação do Atributo 2
+    if (escolha2 == 5) { // Regra especial para Densidade
+        pontosCarta1 += (valorCarta1_attr2 < valorCarta2_attr2) ? 1 : 0;
+        pontosCarta2 += (valorCarta2_attr2 < valorCarta1_attr2) ? 1 : 0;
+    } else { // Regra geral
+        pontosCarta1 += (valorCarta1_attr2 > valorCarta2_attr2) ? 1 : 0;
+        pontosCarta2 += (valorCarta2_attr2 > valorCarta1_attr2) ? 1 : 0;
+    }
+    
+    // Usabilidade: A exibição do resultado é clara e detalhada.
+    printf("====================================================\n");
+    printf("                      RESULTADO\n");
+    printf("====================================================\n\n");
+    printf("           | %-20s | %-20s\n", carta1.pais, carta2.pais);
+    printf("----------------------------------------------------\n");
+    printf("Atributo 1: %-10s | %-20.2f | %-20.2f\n", nomeAtributo1, valorCarta1_attr1, valorCarta2_attr1);
+    printf("Atributo 2: %-10s | %-20.2f | %-20.2f\n", nomeAtributo2, valorCarta1_attr2, valorCarta2_attr2);
+    printf("----------------------------------------------------\n");
+    printf("PONTUACAO FINAL      | %-20d | %-20d\n", pontosCarta1, pontosCarta2);
+    printf("----------------------------------------------------\n\n");
+
+    // Lógica final para determinar o vencedor da rodada
+    if (pontosCarta1 > pontosCarta2) {
+        printf("VENCEDOR DA RODADA: %s!\n", carta1.pais);
+    } else if (pontosCarta2 > pontosCarta1) {
+        printf("VENCEDOR DA RODADA: %s!\n", carta2.pais);
+    } else {
+        printf("RESULTADO DA RODADA: EMPATE!\n");
+    }
+
+    printf("\n====================================================\n");
 
     return 0;
+}
+
+// Função auxiliar para limpar a tela do console.
+// Funciona tanto em Windows (cls) quanto em Linux/Mac (clear).
+void limparTela() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
 }
